@@ -1,6 +1,10 @@
 
-# [PlainNotes](https://github.com/aziz/PlainNotes)
+# [PlainNotes](https://github.com/m-srdjan/PlainNotes)
 Simple and pleasant authoring and note taking for SublimeText.
+
+> **This is a maintained fork** of [aziz/PlainNotes](https://github.com/aziz/PlainNotes),
+> which has had no changes since 2017. It targets Sublime Text 4. See
+> [Changes in this fork](#changes-in-this-fork) and [Installing this fork](#installing-this-fork).
 
 With PlainNotes you can:
  - Organize notes and thoughts
@@ -21,10 +25,49 @@ It's been designed with these ground rules in mind:
 <img src="http://cl.ly/image/21143i2m3e0n/ss2.png" width="727" height="416">
 </p>
 
-**Note:** Although PlainNotes works under SublimeText 2, some features might
-not be available. We're not actively testing it under SublimeText 2 but will
-do our best to make it compatible and usable. We appreciate bug reports and
-pull requests.
+**Note:** This fork is developed and tested on Sublime Text 4 only. The
+syntax definitions rely on `embed`/`escape` (build 3153+), so Sublime Text 2
+is no longer supported.
+
+## Changes in this fork
+
+- **Fenced code blocks no longer break highlighting.** A block tagged `css`,
+  `js`, `python` and so on used to swallow its closing fence, so everything
+  after it was highlighted as code. The closing fence now always ends the
+  block, whatever state the embedded language is in.
+- **Inline and block HTML are contained.** An unclosed tag (`a <b and c`),
+  comment or `<style>` used to turn the rest of the note into HTML or CSS.
+  Only a complete tag on a line now counts as HTML, and HTML blocks end at
+  their closing tag or at a blank line (CommonMark).
+- **More fenced-block languages**, case-insensitive, with text allowed after
+  the language name (```` ```js title="x.js" ````). See
+  [Fenced code blocks](#fenced-code-blocks).
+- **Legacy `.tmLanguage` copies removed**; the `.sublime-syntax` files are
+  the only syntax definitions.
+- **Syntax tests** in `Tests/syntax_test_*.note`.
+
+## Installing this fork
+
+The fork is not on Package Control. Install it by cloning into your
+`Packages` folder (`Preferences -> Browse Packages…`):
+
+1. If you have the Package Control version, remove it first
+   (`Package Control: Remove Package` → `PlainNotes`).
+2. Clone the fork into `Packages/PlainNotes`:
+
+   ```sh
+   git clone https://github.com/m-srdjan/PlainNotes.git PlainNotes
+   ```
+
+Package Control will not replace a git checkout with its own release; when it
+upgrades packages it runs `git pull` on the checkout instead, so the fork
+stays up to date. To stop that, add `"PlainNotes"` to `ignore_vcs_packages`
+in the Package Control settings and update with `git pull` yourself.
+
+If you want the working copy somewhere else, keep the real folder in
+`Packages` and link to it from elsewhere, not the other way round. Sublime's
+file watcher does not follow links into `Packages`, so a package behind a
+junction or symlink will not reload when you edit it.
 
 ## Organizing notes
 
@@ -180,6 +223,60 @@ If you are new to markdown here is a cheat-sheet:
 
 ### Extra Markup
 
+#### Fenced code blocks
+Fence code with ```` ``` ```` or `~~~` and name the language to get it
+highlighted. The name is case-insensitive and may be followed by other text.
+
+````
+```python
+def hello():
+    return "world"
+```
+````
+
+| Language   | Tags                                          |
+|------------|-----------------------------------------------|
+| Batch      | `bat` `batch` `cmd` `dosbatch`                |
+| C / C++    | `c` `h` / `c++` `cpp` `cxx` `cc` `hpp`        |
+| C#         | `cs` `csharp` `c#`                            |
+| Clojure    | `clojure` `clj` `cljs`                        |
+| CoffeeScript | `coffee` `coffeescript`                     |
+| CSS / Less / Sass / SCSS | `css` / `less` / `sass` / `scss` |
+| Diff       | `diff` `patch`                                |
+| Erlang     | `erlang` `erl`                                |
+| Go         | `go` `golang`                                 |
+| Haskell    | `haskell` `hs`                                |
+| HTML / XML | `html` `htm` `xhtml` / `xml` `svg` `xsl` `xslt` `plist` |
+| Java       | `java`                                        |
+| JavaScript | `js` `javascript` `mjs` `cjs` `node`          |
+| JSON       | `json` `jsonc` `json5`                        |
+| JSX / TSX  | `jsx` / `tsx`                                 |
+| LaTeX / TeX | `latex` / `tex`                              |
+| Lisp       | `lisp` `elisp`                                |
+| Lua        | `lua`                                         |
+| Makefile   | `makefile` `make` `mk`                        |
+| Markdown   | `markdown` `md`                               |
+| MATLAB     | `matlab`                                      |
+| Objective-C | `objective-c` `objc`                         |
+| Perl       | `perl` `pl`                                   |
+| PHP        | `php`                                         |
+| PowerShell | `powershell` `pwsh` `ps1` `posh`              |
+| Python     | `python` `py` `py3`                           |
+| R          | `r`                                           |
+| Regex      | `regexp` `regex`                              |
+| Ruby       | `ruby` `rb`                                   |
+| Rust       | `rust` `rs`                                   |
+| Scala      | `scala`                                       |
+| Shell      | `sh` `shell` `bash` `console` `shell-script` / `zsh` |
+| SQL        | `sql` `mysql` `psql` `postgres` `postgresql`  |
+| TOML       | `toml`                                        |
+| TypeScript | `ts` `typescript`                             |
+| YAML       | `yaml` `yml`                                  |
+
+CoffeeScript, Less, Sass/SCSS and PowerShell need their syntax packages
+installed; the rest ship with Sublime Text. Blocks with any other tag, or none,
+are shown as plain code.
+
 #### Admonitions
 When writing a note, you might need to distinguish a block or section by
 giving it a special title and box. These sections might appear several times
@@ -210,6 +307,14 @@ Admonition blocks can have any PlainNotes enhanced markdown inside them and
 they customize the look and feel so that everything looks sublime.
 
 <img align="center" width="380" src="https://cloud.githubusercontent.com/assets/3202/10559414/c9a61ff6-74f0-11e5-8209-1c881ebd8506.png" >
+
+## Development
+
+- `Note-fenced.sublime-syntax` is generated. To add or change a fenced-block
+  language, edit the `LANGS` table in `scripts/gen_fenced.py` and run
+  `python scripts/gen_fenced.py` from the package root.
+- Run the syntax tests with `Tools -> Build With… -> Syntax Tests` while a
+  `Tests/syntax_test_*.note` file is open.
 
 ## License
 
