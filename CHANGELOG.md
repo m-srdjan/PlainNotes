@@ -7,6 +7,10 @@ The fork starts from upstream [aziz/PlainNotes](https://github.com/aziz/PlainNot
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-23
+
+First release of the fork.
+
 ### Fixed
 
 - Fenced code blocks tagged with a language (`css`, `js`, `python`, …) no longer
@@ -54,4 +58,5 @@ The fork starts from upstream [aziz/PlainNotes](https://github.com/aziz/PlainNot
 - Inline `<script>`/`<style>` inside a paragraph (as opposed to an HTML block)
   get no JavaScript/CSS highlighting after the tag.
 
-[Unreleased]: https://github.com/m-srdjan/PlainNotes/compare/6a2d343...master
+[Unreleased]: https://github.com/m-srdjan/PlainNotes/compare/0.4.0...master
+[0.4.0]: https://github.com/m-srdjan/PlainNotes/compare/6a2d343...0.4.0
