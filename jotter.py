@@ -30,7 +30,7 @@ class JotterCommand(sublime_plugin.TextCommand):
         self.view.window().run_command("show_panel", {"panel": "output.jotter"})
         output.settings().set("color_scheme", settings().get("jotter_color_scheme"))
         output.settings().set("is_jott", True)
-        output.set_syntax_file("Packages/PlainNotes/Note.tmLanguage")
+        output.set_syntax_file("Packages/PlainNotes/Note.sublime-syntax")
         sublime.status_message(u"    ✎ Jot down your note and press ESC when done. It will be saved to your 'Inbox'")
         output.set_read_only(False)
         window.focus_view(output)
