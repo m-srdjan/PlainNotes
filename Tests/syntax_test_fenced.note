@@ -1,0 +1,124 @@
+﻿; SYNTAX TEST "Packages/PlainNotes/Note.sublime-syntax"
+
+# CSS
+
+```css
+a,
+.b {
+  color: red;
+}
+```
+; <- markup.raw.block.fenced.markdown punctuation.definition.raw.block.fenced.markdown
+after css
+; <- - markup.raw
+
+```css
+.unclosed {
+  color: red;
+```
+; <- punctuation.definition.raw.block.fenced.markdown
+after unclosed css
+; <- - markup.raw - source.css
+
+# JavaScript
+
+```js
+const a = {
+  b: `template ${1 + 2}`,
+  c: function () { return /re/g; },
+};
+```
+; <- punctuation.definition.raw.block.fenced.markdown
+after js
+; <- - markup.raw
+
+```javascript
+const unclosed = `template
+```
+; <- punctuation.definition.raw.block.fenced.markdown
+after unclosed js
+; <- - markup.raw - source.js
+
+```ts
+interface A { b: string }
+```
+; <- punctuation.definition.raw.block.fenced.markdown
+after ts
+; <- - markup.raw
+
+```json
+{ "a": [1, 2
+```
+; <- punctuation.definition.raw.block.fenced.markdown
+after json
+; <- - markup.raw
+
+# Python
+
+```python
+def f(x):
+    return """docstring
+```
+; <- punctuation.definition.raw.block.fenced.markdown
+after python
+; <- - markup.raw - source.python
+
+```py
+class A:
+    pass
+```
+after py
+; <- - markup.raw
+
+# Info strings and fences
+
+```js title="example.js"
+;  ^^ meta.definition.language.raw.block.fenced.markdown
+;     ^^^^^ meta.definition.language.raw.block.fenced.markdown
+let x = 1;
+;^^ source.js keyword.declaration
+```
+after info string
+; <- - markup.raw
+
+```JS
+let x = 1;
+;^^ source.js
+```
+
+~~~css
+a { color: red; }
+; <- source.css
+~~~
+; <- punctuation.definition.raw.block.fenced.markdown
+after tilde
+; <- - markup.raw
+
+````markdown
+```css
+a {
+```
+; <- - punctuation.definition.raw.block.fenced.markdown
+````
+; <- punctuation.definition.raw.block.fenced.markdown
+after nested fence
+; <- - markup.raw
+
+```unknownlang
+anything
+; <- markup.raw.block.fenced.markdown
+```
+after unknown
+; <- - markup.raw
+
+```cs
+var x = 1;
+; <- source.cs
+```
+
+```c
+int x;
+; <- source.c - source.cs
+```
+after c
+; <- - markup.raw
