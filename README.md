@@ -46,6 +46,8 @@ is no longer supported.
   the only syntax definitions.
 - **Syntax tests** in `Tests/syntax_test_*.note`.
 
+Full details are in [CHANGELOG.md](CHANGELOG.md).
+
 ## Installing this fork
 
 The fork is not on Package Control. Install it by cloning into your
