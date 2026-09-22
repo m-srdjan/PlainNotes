@@ -1,0 +1,88 @@
+; SYNTAX TEST "Packages/PlainNotes/Note.sublime-syntax"
+
+Some <span class="x">text</span> here.
+;    ^^^^^ meta.tag
+;          ^^^^^ entity.other.attribute-name
+;                    ^^^^ - meta.tag
+
+# heading after inline tags
+; <- markup.heading
+
+Compare a <b and c, no closing bracket
+;         ^^ - meta.tag.inline.b
+
+# heading after an unclosed tag
+; <- markup.heading
+
+A paragraph with <script>let x = 1;
+
+# heading after an unclosed script tag
+; <- markup.heading - source.js
+
+A paragraph with <style>a { color: red;
+
+# heading after an unclosed style tag
+; <- markup.heading - source.css
+
+A paragraph with <!-- a comment that never closes
+
+# heading after an unclosed comment
+; <- markup.heading - comment
+
+- list item with <span class="unclosed
+- next item
+; <- punctuation.definition.list_item - meta.tag - string
+
+Arrows a <- b and a <= b and x<y stay text.
+;        ^^ - meta.tag
+;                     ^^ - meta.tag
+;                              ^^ - meta.tag
+
+**bold <em>and</em> more** text
+; <- punctuation.definition.bold
+;      ^^^^ meta.tag
+;                       ^^ punctuation.definition.bold
+;                          ^^^^ - markup.bold
+
+Entities &amp; and &copy; are highlighted.
+;        ^^^^^ constant.character.entity
+
+<div>
+; <- meta.disable-markdown meta.tag
+Block *level* html.
+</div>
+
+# heading after an html block
+; <- markup.heading - meta.disable-markdown
+
+<div class="one-line">single line block</div>
+# heading after a one line block
+; <- markup.heading - meta.disable-markdown
+
+Line<br/>break and <br> and a <!-- closed comment --> here.
+;   ^^^^^ meta.tag
+;                             ^^^^^^^^^^^^^^^^^^^^^^^ comment.block.html
+;                                                     ^^^^ - comment
+
+<script>
+let unfinished = {
+; <- source.js
+</script>
+; <- meta.tag.block.any.html
+# heading after a script block
+; <- markup.heading - source.js
+
+<div>
+unclosed block ends at the blank line
+
+# heading after an unclosed div
+; <- markup.heading - meta.disable-markdown
+
+<pre>
+# not a heading inside pre
+
+# still not a heading after a blank line
+; <- meta.disable-markdown - markup.heading
+</pre>
+# heading after a pre block
+; <- markup.heading - meta.disable-markdown

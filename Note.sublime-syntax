@@ -93,20 +93,36 @@ contexts:
         - include: scope:text.html.markdown.note.fenced
         - include: list-paragraph
     - include: scope:text.html.markdown.note.fenced
-    - match: '^(?=<(p|div|section|address|audio|video|canvas|figcaption|figure|output|article|aside|header|footer|main|h[1-6]|blockquote|pre|table|dd|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^>]*>)(?!.*?</\1>)'
-      comment: Markdown formatting is disabled inside block-level tags.
-      push:
-        - meta_scope: meta.disable-markdown
-        - match: (?<=^</\1>$\n)
-          pop: true
-        - include: scope:text.html.basic
+    - match: '^(?=<(pre|script|style|textarea)\b[^>]*>)(?!.*?</\1>)'
+      comment: Raw blocks may contain blank lines and end only at their closing tag (CommonMark type 1).
+      embed: scope:text.html.basic
+      embed_scope: meta.disable-markdown
+      escape: '^[ \t]*(</)(\1)[ \t]*(>)[ \t]*$\n?'
+      escape_captures:
+        0: meta.disable-markdown meta.tag.block.any.html
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.block.any.html
+        3: punctuation.definition.tag.end.html
+    - match: '^(?=<(p|div|section|address|audio|video|canvas|figcaption|figure|output|article|aside|header|footer|main|h[1-6]|blockquote|table|dd|dl|ol|ul|noscript|form|fieldset|iframe|math|ins|del)\b[^>]*>)(?!.*?</\1>)'
+      comment: |
+        Markdown formatting is disabled inside block-level tags. The block ends
+        at its closing tag or at a blank line (CommonMark type 6), whatever state
+        the embedded HTML is in.
+      embed: scope:text.html.basic
+      embed_scope: meta.disable-markdown
+      escape: '^[ \t]*(</)(\1)[ \t]*(>)[ \t]*$\n?|^(?=[ \t]*$)'
+      escape_captures:
+        0: meta.disable-markdown meta.tag.block.any.html
+        1: punctuation.definition.tag.begin.html
+        2: entity.name.tag.block.any.html
+        3: punctuation.definition.tag.end.html
     - match: '^(?=<(p|div|section|address|audio|video|canvas|figcaption|figure|output|article|aside|header|footer|main|h[1-6]|blockquote|pre|table|dd|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^>]*>)'
       comment: Same rule but for one line disables.
-      push:
-        - meta_scope: meta.disable-markdown
-        - match: $\n?
-          pop: true
-        - include: scope:text.html.basic
+      embed: scope:text.html.basic
+      embed_scope: meta.disable-markdown
+      escape: $\n?
+      escape_captures:
+        0: meta.disable-markdown
     - match: |-
         (?x:
           \s*           # Leading whitespace
@@ -221,7 +237,7 @@ contexts:
         - match: '^(?:\s*$|(?=[ ]{,3}>)|(?=```|~~~)|(?=\*\[.+?\]:.+$)|(?=\{:.+?\}\s*$)|(?=[ ]{0,3}([*+-✔✘☐])(?=\s)))|(?=[ \t]*\n)(?<=^===|^====|=====|^---|^----|-----)[ \t]*\n|(?=^#)'
           pop: true
         - include: inline
-        - include: scope:text.html.basic
+        - include: html-inline
         - match: '^(={3,})(?=[ \t]*$)'
           scope: markup.heading.1.markdown.note
           captures:
@@ -322,7 +338,7 @@ contexts:
         - include: headings
         - include: separator
         - include: inline
-        - include: scope:text.html.basic
+        - include: html-inline
         - match: (?<=\n)
           pop: true
   ampersand:
@@ -417,7 +433,7 @@ contexts:
                 2: punctuation.definition.list_item.markdown
                 3: meta.paragraph.list.markdown
             - include: inline
-            - include: scope:text.html.basic
+            - include: html-inline
   block_raw:
     - match: '\G([ ]{4}|\t).*$\n?'
       scope: markup.raw.block.markdown
@@ -471,11 +487,7 @@ contexts:
           captures:
             1: punctuation.definition.bold.markdown
           pop: true
-        - match: "(?=<[^>]*?>)"
-          push:
-            - include: scope:text.html.basic
-            - match: (?<=>)
-              pop: true
+        - include: html-inline
         - include: escape
         - include: ampersand
         - include: bracket
@@ -496,6 +508,20 @@ contexts:
         Markdown will convert this for us. We match it so that the
                 HTML grammar will not mark it up as invalid.
       scope: meta.other.valid-bracket.markdown
+  html-inline:
+    # Only a complete tag on this line counts as HTML, so `x<y`, `a <- b` or an
+    # unclosed `<span class="` stay text. Each tag is embedded on its own and the
+    # embed ends after its `>` or at end of line, so an unclosed tag, comment,
+    # <script> or <style> cannot swallow the rest of the note.
+    - match: |-
+        (?x)(?=<(?:
+            [A-Za-z][\w:.-]*(?:\s[^<>\n]*)?/?>    # opening tag
+          | /[A-Za-z][\w:.-]*\s*>                 # closing tag
+          | !--                                   # comment
+        ))
+      embed: scope:text.html.basic
+      escape: (?<=>)(?!<)|$
+    - include: scope:text.html.basic#entities
   escape:
     - match: '\\[-`*_#+.!(){}\[\]\\>]'
       scope: constant.character.escape.markdown
@@ -692,11 +718,7 @@ contexts:
           captures:
             1: punctuation.definition.italic.markdown
           pop: true
-        - match: "(?=<[^>]*?>)"
-          push:
-            - include: scope:text.html.basic
-            - match: (?<=>)
-              pop: true
+        - include: html-inline
         - include: escape
         - include: ampersand
         - include: bracket
@@ -830,7 +852,7 @@ contexts:
             1: punctuation.definition.list_item.markdown punctuation.definition.list_item.number.markdown
             2: punctuation.definition.list_item.markdown
         - include: inline
-        - include: scope:text.html.basic
+        - include: html-inline
         - include: scope:text.html.markdown.note.fenced
   note-tag:
     - match: |-
@@ -912,11 +934,7 @@ contexts:
           captures:
             1: punctuation.definition.strikethrough.markdown
           pop: true
-        - match: "(?=<[^>]*?>)"
-          push:
-            - include: scope:text.html.basic
-            - match: (?<=>)
-              pop: true
+        - include: html-inline
         - include: escape
         - include: ampersand
         - include: bracket
