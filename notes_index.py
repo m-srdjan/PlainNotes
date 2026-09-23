@@ -32,7 +32,7 @@ class NotesBufferCommand(sublime_plugin.WindowCommand):
         view.set_scratch(True)
         view.set_name(u"✎ Notes Index")
         view.set_syntax_file('Packages/PlainNotes/Notes Index.sublime-syntax')
-        view.settings().set('color_scheme', 'Packages/PlainNotes/Color Schemes/Notes-Index.hidden-tmTheme')
+        view.settings().set('color_scheme', settings().get('index_color_scheme', 'Packages/PlainNotes/Color Schemes/Notes-Index.hidden-tmTheme'))
         self.window.focus_view(view)
         view.run_command('notes_buffer_refresh')
 

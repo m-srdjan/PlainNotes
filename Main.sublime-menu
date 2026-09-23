@@ -15,46 +15,22 @@
                     "children":
                     [
                         {
-                            "command": "open_file",
-                            "args": {"file": "${packages}/PlainNotes/Notes.sublime-settings" },
-                            "caption": "Settings – Default"
-                        },
-                        {
-                            "command": "open_file",
-                            "args": {"file": "${packages}/User/Notes.sublime-settings"},
-                            "caption": "Settings – User"
-                        },
-                        { "caption": "-" },
-                        {
-                            "command": "open_file",
+                            "command": "edit_settings",
                             "args": {
-                                "file": "${packages}/PlainNotes/Default (OSX).sublime-keymap",
-                                "platform": "OSX"
+                                "base_file": "${packages}/PlainNotes/Notes.sublime-settings",
+                                "default": "{\n\t$0\n}\n"
                             },
-                            "caption": "Key Bindings – Default"
+                            "caption": "Settings"
                         },
                         {
-                            "command": "open_file",
+                            "command": "edit_settings",
                             "args": {
-                                "file": "${packages}/PlainNotes/Default (Linux).sublime-keymap",
-                                "platform": "Linux"
+                                "base_file": "${packages}/PlainNotes/Default ($platform).sublime-keymap",
+                                "user_file": "${packages}/User/Default ($platform).sublime-keymap",
+                                "default": "[\n\t$0\n]\n"
                             },
-                            "caption": "Key Bindings – Default"
-                        },
-                        {
-                            "command": "open_file",
-                            "args": {
-                                "file": "${packages}/PlainNotes/Default (Windows).sublime-keymap",
-                                "platform": "Windows"
-                            },
-                            "caption": "Key Bindings – Default"
-                        },
-                        {
-                            "command": "open_file",
-                            "args": {"file": "${packages}/User/Default.sublime-keymap" },
-                            "caption": "Key Bindings – User"
-                        },
-                        { "caption": "-" }
+                            "caption": "Key Bindings"
+                        }
                     ]
                 }
             ]

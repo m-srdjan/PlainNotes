@@ -110,7 +110,7 @@ It can be accessed by pressing <kbd>F1</kbd> (that can be customized in your
 Key-bindings if it conflicts with your other key-bindings) or through
 `Notes: Jotter` in command palette.
 The default color scheme of the jotter panel can be customized in user
-settings (`Preferences -> Package Settings -> PlainNotes -> Settings - User`):
+settings (`Preferences -> Package Settings -> PlainNotes -> Settings`):
 
 ```json
 { "jotter_color_scheme": "Packages/PlainNotes/Color Schemes/Sticky-Yellow.tmTheme" }
@@ -120,7 +120,7 @@ settings (`Preferences -> Package Settings -> PlainNotes -> Settings - User`):
 Inbox is where all your quick notes from *Jotter* live. You can view inbox
 through `Notes: Inbox` in command palette or via the Notes main menu.
 The date and time format of the note headers in inbox can be customized in user
-settings (`Preferences -> Package Settings -> PlainNotes -> Settings - User`):
+settings (`Preferences -> Package Settings -> PlainNotes -> Settings`):
 
 ```json
 {
@@ -134,6 +134,11 @@ Pressing <kbd>ctrl+F4</kbd> or selecting `Notes: Index` from the command
 palette will give you the *Notes Index Card* with the list of all notes sorted
 alphabetically.
 Pressing <kbd>Enter</kbd> on any note will open it in a new tab.
+The color scheme of the index can be customized in user settings:
+
+```json
+{ "index_color_scheme": "Packages/PlainNotes/Color Schemes/Sticky-Yellow.tmTheme" }
+```
 
 #### Change note color
 Open command palette and search for `Note: Change Color…`. it will give you a
@@ -161,13 +166,13 @@ Open a note and then open command palette and search for `Note: Rename`.
 
 #### Change note file extension
 You can change the note file extension in settings. To do so, go to
-`Preferences -> Package Settings -> PlainNotes -> Settings - User` and modify
+`Preferences -> Package Settings -> PlainNotes -> Settings` and modify
 `"note_save_extension":`. The default note type is `.note` which has the
 possibility of setting different note colors and some special markup.
 Alternatively you can use any note extension you want such as markdown `.md`.
 
 #### Add yaml front matter to notes
-Go to `Preferences -> Package Settings -> PlainNotes -> Settings - User` and
+Go to `Preferences -> Package Settings -> PlainNotes -> Settings` and
 modify `"enable_yaml"`
 
 By default, the following yaml items are added:

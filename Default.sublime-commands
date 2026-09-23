@@ -8,5 +8,22 @@
   { "caption": "Notes: Archive"       , "command": "note_archive"      },
   { "caption": "Notes: Delete"        , "command": "note_remove"       },
   { "caption": "Notes: Change Color…" , "command": "note_change_color" },
-  { "caption": "Notes: Unarchive…"    , "command": "note_unarchive"    }
+  { "caption": "Notes: Unarchive…"    , "command": "note_unarchive"    },
+  {
+    "caption": "Preferences: PlainNotes Settings",
+    "command": "edit_settings",
+    "args": {
+      "base_file": "${packages}/PlainNotes/Notes.sublime-settings",
+      "default": "{\n\t$0\n}\n"
+    }
+  },
+  {
+    "caption": "Preferences: PlainNotes Key Bindings",
+    "command": "edit_settings",
+    "args": {
+      "base_file": "${packages}/PlainNotes/Default ($platform).sublime-keymap",
+      "user_file": "${packages}/User/Default ($platform).sublime-keymap",
+      "default": "[\n\t$0\n]\n"
+    }
+  }
 ]

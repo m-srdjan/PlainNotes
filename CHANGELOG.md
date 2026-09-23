@@ -7,6 +7,18 @@ The fork starts from upstream [aziz/PlainNotes](https://github.com/aziz/PlainNot
 
 ## [Unreleased]
 
+### Added
+
+- `index_color_scheme` setting for the color scheme of the Notes Index.
+- `Preferences: PlainNotes Settings` and `Preferences: PlainNotes Key Bindings`
+  in the command palette.
+
+### Changed
+
+- `Preferences -> Package Settings -> PlainNotes -> Settings` and `Key Bindings`
+  open the defaults and your user file side by side in one window, replacing
+  the separate Default and User menu items.
+
 ## [0.4.0] - 2026-09-23
 
 First release of the fork.
