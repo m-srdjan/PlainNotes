@@ -3,7 +3,7 @@
   { "caption": "Notes: New…"          , "command": "notes_new"         },
   { "caption": "Notes: Index"         , "command": "notes_buffer"      },
   { "caption": "Notes: Open Notes Folder", "command": "notes_open_folder" },
-  { "caption": "Notes: Rename"        , "command": "note_rename"       },
+  { "caption": "Notes: Move / Rename…", "command": "note_rename"       },
   { "caption": "Notes: Delete"        , "command": "note_remove"       },
   { "caption": "Notes: Change Color…" , "command": "note_change_color" },
   {

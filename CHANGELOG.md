@@ -7,6 +7,24 @@ The fork starts from upstream [aziz/PlainNotes](https://github.com/aziz/PlainNot
 
 ## [Unreleased]
 
+### Added
+
+- Move and rename notes and folders by editing their path. In the Notes Index,
+  press F2 on a note or folder, or right-click it and choose `Move / Rename…`;
+  an input field shows its path relative to the notes folder
+  (`Archive/2024 General`). Changing the folders moves the item, changing the
+  name renames it, and missing folders are created. Colors and open tabs
+  follow the move.
+
+### Changed
+
+- `Notes: Rename` is now `Notes: Move / Rename…` and opens the same input
+  field, filled in with the note's current path instead of empty. It keeps the
+  note's own extension instead of switching to `note_save_extension`, and no
+  longer closes and reopens the tab.
+- The Notes Index sorts folders and notes case-insensitively, and hides the
+  `note_save_extension` extension instead of always `.note`.
+
 ## [0.5.0] - 2026-09-23
 
 Folders replace Archive and Jotter as the way to organize notes.

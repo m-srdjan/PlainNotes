@@ -49,7 +49,7 @@
         { "caption": "Open Notes Folder", "command": "notes_open_folder"},
         { "caption": "-" , "id": "note" },
         { "caption": "Change Color…", "command": "note_change_color"},
-        { "caption": "Rename…", "command": "note_rename"},
+        { "caption": "Move / Rename…", "command": "note_rename"},
         { "caption": "Delete…", "command": "note_remove"},
         { "caption": "-" , "id": "end" }
     ]

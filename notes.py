@@ -80,29 +80,12 @@ def setup_notes_list(file_list):
     return helpers.return_sublist(file_list, indices)
 
 
-def update_color(old_file_path, new_file_path):
-    # update color scheme db
-    f_id_old = file_id(old_file_path)
-
-    if db.get(f_id_old):
-        f_id_new = file_id(new_file_path)
-        if not db.get(f_id_new):
-            db[f_id_new] = {}
-
-        db[f_id_new]["color_scheme"] = db[f_id_old]["color_scheme"]
-
-        # delete old
-        db.pop(f_id_old, None)
-
-        save_to_brain()
-
-
-def refresh_indexes():
+def refresh_indexes(select_path=None):
     # redraw every open Notes Index so it shows the current notes
     for window in sublime.windows():
         for view in window.views():
             if view.settings().get("notes_buffer_files") is not None:
-                view.run_command("notes_buffer_refresh")
+                view.run_command("notes_buffer_refresh", {"select_path": select_path})
 
 
 class NotesListCommand(sublime_plugin.ApplicationCommand):
@@ -286,45 +269,107 @@ class NoteRemoveCommand(sublime_plugin.WindowCommand):
             return False
 
 
+class NotesMoveCommand(sublime_plugin.ApplicationCommand):
+    """Move or rename a note or folder by editing its path relative to the notes folder."""
+
+    CAPTION = "Move / rename (Enter to apply, Esc to cancel):"
+
+    def run(self, path):
+        self.root = get_root()
+        self.src = os.path.normpath(path)
+        self.is_dir = os.path.isdir(self.src)
+        rel = os.path.relpath(self.src, self.root).replace(os.sep, "/")
+        # show notes the way the Index does: without the default extension
+        self.ext = "" if self.is_dir else os.path.splitext(self.src)[1]
+        shown_ext = "." + settings().get("note_save_extension")
+        if self.ext == shown_ext:
+            rel = rel[:-len(shown_ext)]
+        self.show(rel)
+
+    def show(self, text):
+        window = sublime.active_window()
+        panel = window.show_input_panel(self.CAPTION, text, self.move, None, None)
+        # select the name so typing renames; Home goes to the folders
+        start = text.rfind("/") + 1
+        end = len(text)
+        if not self.is_dir and self.ext and text.endswith(self.ext):
+            end -= len(self.ext)
+        panel.sel().clear()
+        panel.sel().add(sublime.Region(start, end))
+
+    def fail(self, message, text):
+        sublime.error_message(message)
+        self.show(text)
+
+    def move(self, text):
+        parts = [p.strip() for p in text.strip().replace("\\", "/").strip("/").split("/")]
+        if any(p in ("", ".", "..") for p in parts):
+            return self.fail("Type a path like Folder/Name, without empty parts, '.' or '..'.", text)
+        if any(p.startswith(".") for p in parts) or parts[0] == brain_dir():
+            return self.fail("Hidden folders and the PlainNotes data folder can't be used.", text)
+
+        name = parts[-1]
+        if not self.is_dir and not any(name.lower().endswith("." + e) for e in settings().get("note_file_extensions")):
+            name += self.ext
+        dest = os.path.normpath(os.path.join(self.root, *(parts[:-1] + [name])))
+
+        if dest == self.src:
+            return
+        if not os.path.exists(self.src):
+            refresh_indexes()
+            return sublime.error_message("This note or folder no longer exists.")
+        # a case-only rename on Windows sees the source as the destination
+        same_file = os.path.normcase(dest) == os.path.normcase(self.src)
+        if os.path.exists(dest) and not same_file:
+            return self.fail("Something already exists at " + text + ".", text)
+        if self.is_dir and os.path.normcase(dest).startswith(os.path.normcase(self.src) + os.sep):
+            return self.fail("A folder can't be moved into itself.", text)
+
+        try:
+            parent = os.path.dirname(dest)
+            if not os.path.isdir(parent):
+                os.makedirs(parent)
+            os.rename(self.src, dest)
+        except OSError as e:
+            return self.fail("Couldn't move it: " + str(e), text)
+
+        move_colors(self.src, dest)
+        retarget_views(self.src, dest)
+        refresh_indexes(dest)
+        sublime.status_message("    Moved to " + os.path.relpath(dest, self.root).replace(os.sep, "/"))
+
+
+def move_colors(src, dest):
+    # carry saved colors over to the new path, including notes inside a moved folder
+    src_id, dest_id = file_id(src), file_id(dest)
+    moved = False
+    for key in list(db):
+        if key == src_id or key.startswith(src_id + os.sep):
+            db[dest_id + key[len(src_id):]] = db.pop(key)
+            moved = True
+    if moved:
+        save_to_brain()
+
+
+def retarget_views(src, dest):
+    # point open tabs of moved notes at their new location
+    src_norm = os.path.normcase(src)
+    for window in sublime.windows():
+        for view in window.views():
+            name = view.file_name()
+            if not name:
+                continue
+            name_norm = os.path.normcase(os.path.normpath(name))
+            if name_norm == src_norm:
+                view.retarget(dest)
+            elif name_norm.startswith(src_norm + os.sep):
+                view.retarget(dest + os.path.normpath(name)[len(src):])
+
+
 class NoteRenameCommand(sublime_plugin.WindowCommand):
 
     def run(self):
-        self.window.show_input_panel("New Name:", "", self.rename_note, None, None)
-
-    def rename_note(self, title):
-        global db
-        self.notes_dir = os.path.expanduser(root)
-        self.file_path = self.window.active_view().file_name()
-        filename = title.split("/")
-        if len(filename) > 1:
-            title = filename[len(filename) - 1]
-            directory = self.notes_dir + os.path.sep + filename[0]
-            tag = filename[0]
-        else:
-            title = filename[0]
-            directory = self.notes_dir
-            tag = ""
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
-        if any(title.endswith("." + ext) for ext in settings().get("note_file_extensions")):
-            ext = ""
-        else:
-            ext = "." + settings().get("note_save_extension")
-
-        new_file_path = os.path.join(directory, title + ext)
-        # pardir = os.path.abspath(os.path.join(self.file_path, '..'))
-        if not os.path.isfile(new_file_path):
-            os.rename(self.file_path, new_file_path)
-            self.window.run_command("close_file")
-            sublime.run_command("notes_open", {"file_path": new_file_path})
-
-            # update color scheme db
-            update_color(self.file_path, new_file_path)
-
-        else:
-            sublime.error_message("Note already exists!")
-            self.window.show_input_panel("New Name:", "", self.rename_note, None, None)
+        sublime.run_command("notes_move", {"path": self.window.active_view().file_name()})
 
     def is_enabled(self):
         is_note = self.window.active_view().settings().get("is_note")

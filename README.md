@@ -134,8 +134,24 @@ PlainNotes will set the color-scheme automatically.
 #### Delete note
 Open a note and then open command palette and search for `Note: Delete`.
 
-#### Rename note
-Open a note and then open command palette and search for `Note: Rename`.
+#### Move or rename notes and folders
+In the Notes Index, put the cursor on a note or folder and press
+<kbd>F2</kbd>, or right-click it and choose `Move / Rename…`. In an open note,
+use `Notes: Move / Rename…` from the command palette or the Notes menu.
+
+An input field at the bottom of the window shows the item's path relative to
+the notes folder, for example `Archive/2024 General`. Edit it and press
+<kbd>Enter</kbd> (or <kbd>Esc</kbd> to cancel):
+
+- `2024 General` moves the note to the notes folder itself.
+- `Work/2024 General` moves it into `Work`, creating the folder if needed.
+- `Archive/2024 Budget` renames it.
+
+Moving a folder moves everything in it. Notes keep their extension and color,
+and open tabs follow the move. Folders left empty are kept. Since the Index
+sorts alphabetically, renaming (`01 Plan`, `02 Budget`) also reorders notes.
+To use a different key than <kbd>F2</kbd>, rebind `notes_buffer_move` in
+`Preferences -> Package Settings -> PlainNotes -> Key Bindings`.
 
 #### Change note file extension
 You can change the note file extension in settings. To do so, go to
