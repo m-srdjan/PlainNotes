@@ -1,11 +1,8 @@
 {
   "root": "~/Dropbox/Notes/",
   "note_color_scheme": "Packages/PlainNotes/Color Schemes/Sticky-Yellow.tmTheme",
-  "jotter_color_scheme": "Packages/PlainNotes/Color Schemes/Sticky-Yellow.tmTheme",
   "index_color_scheme": "Packages/PlainNotes/Color Schemes/Notes-Index.hidden-tmTheme",
-  "jotter_date_format" :"%d %b %Y",
-  "jotter_time_format": "%I:%M %p",
-  "jotter_dir": ".brain",
+  "data_dir": ".brain",
   "note_save_extension": "note",
   "note_file_extensions": ["md","note"],
   "enable_yaml": false,

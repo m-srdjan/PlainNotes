@@ -7,8 +7,14 @@ The fork starts from upstream [aziz/PlainNotes](https://github.com/aziz/PlainNot
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-09-23
+
+Folders replace Archive and Jotter as the way to organize notes.
+
 ### Added
 
+- `Notes: Open Notes Folder` (also in the Notes menu) opens the notes folder in
+  the system file manager.
 - `index_color_scheme` setting for the color scheme of the Notes Index.
 - `Preferences: PlainNotes Settings` and `Preferences: PlainNotes Key Bindings`
   in the command palette.
@@ -27,11 +33,17 @@ The fork starts from upstream [aziz/PlainNotes](https://github.com/aziz/PlainNot
   `.`).
 - `Notes: New…` accepts nested folders in the title (`work/2026/plan`); it used
   to keep only the first folder.
+- The `jotter_dir` setting is renamed `data_dir`; it names the folder where
+  PlainNotes keeps note colors (`brain.json`). `jotter_dir` in user settings
+  still works.
 
 ### Removed
 
 - The Archive and Unarchive commands and the `archive_dir` setting. Use folders
   instead. An existing `.archive` folder is left on disk untouched.
+- Jotter (`F1`) and Inbox, with the `jotter_color_scheme`,
+  `jotter_date_format` and `jotter_time_format` settings. An existing
+  `Inbox.note` is left on disk untouched.
 
 ## [0.4.0] - 2026-09-23
 
@@ -84,5 +96,6 @@ First release of the fork.
 - Inline `<script>`/`<style>` inside a paragraph (as opposed to an HTML block)
   get no JavaScript/CSS highlighting after the tag.
 
-[Unreleased]: https://github.com/m-srdjan/PlainNotes/compare/0.4.0...master
+[Unreleased]: https://github.com/m-srdjan/PlainNotes/compare/0.5.0...master
+[0.5.0]: https://github.com/m-srdjan/PlainNotes/compare/0.4.0...0.5.0
 [0.4.0]: https://github.com/m-srdjan/PlainNotes/compare/6a2d343...0.4.0

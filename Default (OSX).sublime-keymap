@@ -3,7 +3,6 @@
 { "keys": ["f4"],       "command": "notes_list"   },
 { "keys": ["ctrl+f4"],  "command": "notes_buffer" },
 { "keys": ["super+f4"], "command": "notes_new"    },
-{ "keys": ["f1"],       "command": "jotter"       },
 
 // Notes: Index keymaps
 { "keys": ["enter"], "command": "notes_buffer_open", "context":
@@ -16,14 +15,6 @@
 
 { "keys": ["enter"], "command": "note_preview_image", "context":
   [{ "key": "selector", "operator": "equal", "operand": "text.html.markdown.note meta.image.inline.markdown" }]
-},
-
-// Notes: Jotter keymaps
-{ "keys": ["escape"], "command": "save_jot_and_hide_panel", "context":
-  [
-    { "key": "panel_visible", "operator": "equal", "operand": true },
-    { "key": "panel", "operator": "equal", "operand": "output.jotter" }
-  ]
 },
 
 // Note Extra Features: TODO and HEADING FOLDING

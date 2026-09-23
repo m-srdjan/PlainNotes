@@ -29,7 +29,8 @@ def file_id(path):
     return os.path.relpath(path, root)
 
 def brain_dir():
-    brain_settings = settings().get("jotter_dir")
+    # jotter_dir is the old name of data_dir, still honored in user settings
+    brain_settings = settings().get("jotter_dir") or settings().get("data_dir")
     if brain_settings:
         return brain_settings
     else:
@@ -132,6 +133,12 @@ class NotesOpenCommand(sublime_plugin.ApplicationCommand):
         view.settings().set("is_note", True)
         if db.get(f_id):
             view.settings().set("color_scheme", db[f_id]["color_scheme"])
+
+
+class NotesOpenFolderCommand(sublime_plugin.WindowCommand):
+
+    def run(self):
+        self.window.run_command("open_dir", {"dir": get_root()})
 
 
 class NotesNewCommand(sublime_plugin.ApplicationCommand):
@@ -356,13 +363,10 @@ def plugin_loaded():
     db = {}
     root = get_root()
     brain = os.path.join(root, brain_dir())
-    inbox = os.path.join(root, brain_dir(), 'Inbox.note')
     db_json_file = os.path.join(root, brain_dir(), 'brain.json')
 
     if not os.path.exists(brain):
         os.makedirs(brain)
-    if not os.path.isfile(inbox):
-        open(inbox, mode='a', encoding='utf-8').close()
 
     try:
         with open(db_json_file, 'r') as f:

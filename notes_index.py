@@ -19,7 +19,8 @@ def get_root():
         return os.path.normpath(os.path.expanduser(settings().get("root")))
 
 def brain_dir():
-    brain_settings = settings().get("jotter_dir")
+    # jotter_dir is the old name of data_dir, still honored in user settings
+    brain_settings = settings().get("jotter_dir") or settings().get("data_dir")
     if brain_settings:
         return brain_settings
     else:
@@ -54,7 +55,7 @@ class NotesBufferRefreshCommand(sublime_plugin.TextCommand):
     def list_files(self, path):
         lines = []
         for root, dirs, files in os.walk(path, topdown=True):
-            # skip hidden folders and the jotter folder, and list folders in order
+            # skip hidden folders and the data folder, and list folders in order
             dirs[:] = sorted(d for d in dirs if not d.startswith(".") and d != brain_dir())
             relpath = os.path.relpath(root, path)
             level = 0 if relpath == "." else relpath.count(os.sep) + 1
