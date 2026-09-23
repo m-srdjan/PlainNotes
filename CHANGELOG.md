@@ -12,12 +12,26 @@ The fork starts from upstream [aziz/PlainNotes](https://github.com/aziz/PlainNot
 - `index_color_scheme` setting for the color scheme of the Notes Index.
 - `Preferences: PlainNotes Settings` and `Preferences: PlainNotes Key Bindings`
   in the command palette.
+- Pressing Enter on a folder in the Notes Index creates a new note in that
+  folder. It used to open an empty tab.
+- Open Notes Index tabs refresh when a new note is created.
 
 ### Changed
 
 - `Preferences -> Package Settings -> PlainNotes -> Settings` and `Key Bindings`
   open the defaults and your user file side by side in one window, replacing
   the separate Default and User menu items.
+- The Notes Index lists folders top-down and alphabetically, each folder before
+  its subfolders, and labels a folder with its own name instead of its full path.
+- The Notes Index and the notes list skip hidden folders (names starting with
+  `.`).
+- `Notes: New…` accepts nested folders in the title (`work/2026/plan`); it used
+  to keep only the first folder.
+
+### Removed
+
+- The Archive and Unarchive commands and the `archive_dir` setting. Use folders
+  instead. An existing `.archive` folder is left on disk untouched.
 
 ## [0.4.0] - 2026-09-23
 

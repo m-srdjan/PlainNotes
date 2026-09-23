@@ -53,24 +53,23 @@ class NotesBufferRefreshCommand(sublime_plugin.TextCommand):
 
     def list_files(self, path):
         lines = []
-        for root, dirs, files in os.walk(path, topdown=False):
-            level = root.replace(path, '').count(os.sep) - 1
-            indent = ' ' * TAB_SIZE * (level)
+        for root, dirs, files in os.walk(path, topdown=True):
+            # skip hidden folders and the jotter folder, and list folders in order
+            dirs[:] = sorted(d for d in dirs if not d.startswith(".") and d != brain_dir())
             relpath = os.path.relpath(root, path)
-            if not relpath.startswith("."):
-                line_str = u'{0}▣ {1}'.format(indent, os.path.relpath(root, path))
+            level = 0 if relpath == "." else relpath.count(os.sep) + 1
+            if level:
+                indent = ' ' * TAB_SIZE * (level - 1)
+                line_str = u'{0}▣ {1}'.format(indent, os.path.basename(root))
                 lines.append((line_str, root))
-            if relpath.startswith(settings().get("archive_dir")):
-                line_str = u'{0}▣ {1}'.format(indent, 'Archive')
-                lines.append((line_str, root))
-            if not relpath.startswith(brain_dir()):
-                subindent = ' ' * TAB_SIZE * (level + 1)
-                for f in files:
-                    for ext in settings().get("note_file_extensions"):  # display only files with given extension
-                        if fnmatch.fnmatch(f, "*." + ext):
-                            line_str = u'{0}≡ {1}'.format(subindent, re.sub(r'\.note$', '', f))
-                            line_path = os.path.normpath(os.path.join(root, f))
-                            lines.append((line_str, line_path))
+            subindent = ' ' * TAB_SIZE * level
+            for f in sorted(files):
+                for ext in settings().get("note_file_extensions"):  # display only files with given extension
+                    if fnmatch.fnmatch(f, "*." + ext):
+                        line_str = u'{0}≡ {1}'.format(subindent, re.sub(r'\.note$', '', f))
+                        line_path = os.path.normpath(os.path.join(root, f))
+                        lines.append((line_str, line_path))
+                        break
         return lines
 
 
@@ -81,4 +80,7 @@ class NotesBufferOpenCommand(sublime_plugin.TextCommand):
             file_index = v.rowcol(sel.a)[0]
             files = v.settings().get('notes_buffer_files')
             file_path = files[file_index][1]
-            sublime.run_command("notes_open", {"file_path": file_path})
+            if os.path.isdir(file_path):
+                sublime.run_command("notes_new", {"directory": file_path})
+            else:
+                sublime.run_command("notes_open", {"file_path": file_path})

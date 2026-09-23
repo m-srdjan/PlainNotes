@@ -39,8 +39,8 @@ def brain_dir():
 def find_notes(self, root, exclude):
     note_files = []
     for path, subdirs, files in os.walk(root, topdown=True):
-        if exclude:
-            subdirs[:] = [d for d in subdirs if d not in exclude]
+        # skip hidden folders and excluded ones
+        subdirs[:] = [d for d in subdirs if not d.startswith(".") and d not in exclude]
         relpath = os.path.relpath(path, root)
         for name in files:
             for ext in settings().get("note_file_extensions"):
@@ -96,13 +96,20 @@ def update_color(old_file_path, new_file_path):
         save_to_brain()
 
 
+def refresh_indexes():
+    # redraw every open Notes Index so it shows the current notes
+    for window in sublime.windows():
+        for view in window.views():
+            if view.settings().get("notes_buffer_files") is not None:
+                view.run_command("notes_buffer_refresh")
+
+
 class NotesListCommand(sublime_plugin.ApplicationCommand):
 
     def run(self):
-        exclude = set([settings().get("archive_dir"), brain_dir()])
         root = get_root()
         self.notes_dir = root
-        self.file_list = find_notes(self, root, exclude)
+        self.file_list = find_notes(self, root, [brain_dir()])
         rlist = setup_notes_list(self.file_list)
         window = sublime.active_window()
         window.show_quick_panel(rlist, self.open_note)
@@ -129,23 +136,23 @@ class NotesOpenCommand(sublime_plugin.ApplicationCommand):
 
 class NotesNewCommand(sublime_plugin.ApplicationCommand):
 
-    def run(self, title=None):
+    def run(self, title=None, directory=None):
         self.notes_dir = get_root()
+        self.base_dir = directory or self.notes_dir
         self.window = sublime.active_window()
         if title is None:
-            self.window.show_input_panel("Title", "", self.create_note, None, None)
+            folder = os.path.relpath(self.base_dir, self.notes_dir)
+            caption = "Title" if folder == "." else u"Title (in {0})".format(folder)
+            self.window.show_input_panel(caption, "", self.create_note, None, None)
         else:
             self.create_note(title)
 
     def create_note(self, title):
         filename = title.split("/")
-        if len(filename) > 1:
-            title = filename[len(filename) - 1]
-            directory = os.path.join(self.notes_dir, filename[0])
-            tag = filename[0]
-        else:
-            title = filename[0]
-            directory = self.notes_dir
+        title = filename[-1]
+        directory = os.path.join(self.base_dir, *filename[:-1])
+        tag = os.path.relpath(directory, self.notes_dir).replace(os.sep, "/")
+        if tag == ".":
             tag = ""
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -158,6 +165,7 @@ class NotesNewCommand(sublime_plugin.ApplicationCommand):
         file = os.path.join(directory, title + ext)
         if not os.path.exists(file):
             open(file, 'w+').close()
+            refresh_indexes()
         view = sublime.active_window().open_file(file)
         color_scheme = settings().get("note_color_scheme")
         if color_scheme:
@@ -250,69 +258,6 @@ class NoteChangeColorCommand(sublime_plugin.WindowCommand):
     def is_enabled(self):
         syntax = self.window.active_view().settings().get("syntax")
         return syntax.endswith("Note.tmLanguage") or syntax.endswith("Note.sublime-syntax")
-
-
-class NoteArchiveCommand(sublime_plugin.WindowCommand):
-
-    def run(self):
-        window = sublime.active_window()
-        self.notes_dir = get_root()
-        self.archive_note()
-        sublime.status_message("    Note Archived.")
-
-    def archive_note(self):
-        file_path = self.window.active_view().file_name()
-        f_id = file_id(file_path)
-        archive_dir = os.path.join(self.notes_dir, settings().get("archive_dir"))
-        new_file_path = os.path.join(archive_dir, f_id)
-
-        if not os.path.exists(archive_dir):
-            os.makedirs(archive_dir)
-        if not os.path.isfile(new_file_path):
-            os.renames(file_path, new_file_path)
-            self.window.run_command("close_file")
-
-            # update color scheme db
-            update_color(file_path, new_file_path)
-
-    def is_enabled(self):
-        is_note = self.window.active_view().settings().get("is_note")
-        if is_note:
-            return is_note
-        else:
-            return False
-
-
-class NoteUnarchiveCommand(sublime_plugin.ApplicationCommand):
-
-    def run(self):
-        self.notes_dir = get_root()
-        archive_dir = os.path.join(self.notes_dir, settings().get("archive_dir"))
-        self.file_list = find_notes(self, archive_dir, [])
-        rlist = setup_notes_list(self.file_list)
-        window = sublime.active_window()
-        if rlist:
-            window.show_quick_panel(rlist, self.unarchive_note)
-        else:
-            window.show_quick_panel(['There are no notes to unarchive.'], [])
-
-    def unarchive_note(self, index):
-        if index == -1:
-            return
-        file_path = self.file_list[index][1]
-        new_file_path = file_path.replace(os.path.sep + settings().get("archive_dir"), '')
-        # print(file_path)
-        # print(new_file_path)
-        if not os.path.isfile(new_file_path):
-            os.renames(file_path, new_file_path)
-
-            # update color scheme db
-            update_color(file_path, new_file_path)
-
-            sublime.run_command("notes_open", {"file_path": new_file_path})
-
-    def is_enabled(self):
-        return True
 
 
 class NoteRemoveCommand(sublime_plugin.WindowCommand):

@@ -132,8 +132,11 @@ settings (`Preferences -> Package Settings -> PlainNotes -> Settings`):
 #### Notes Index Card (`ctrl+F4`)
 Pressing <kbd>ctrl+F4</kbd> or selecting `Notes: Index` from the command
 palette will give you the *Notes Index Card* with the list of all notes sorted
-alphabetically.
-Pressing <kbd>Enter</kbd> on any note will open it in a new tab.
+alphabetically, grouped under their folders (`▣`). Hidden folders (names
+starting with `.`) are left out.
+Pressing <kbd>Enter</kbd> on any note will open it in a new tab. Pressing
+<kbd>Enter</kbd> on a folder asks for a title and creates a new note in that
+folder.
 The color scheme of the index can be customized in user settings:
 
 ```json
@@ -146,17 +149,6 @@ list of 10 different colors that is shown in the above image. Pressing up and
 down will give you a preview.
 Color of the note is remembered by PlainNotes and whenever you open that file,
 PlainNotes will set the color-scheme automatically.
-
-#### Archive note
-Open command palette and search for `Note: Archive`. This will move the note
-into an archive folder than can be specified in the settings -- The default
-archive directory is `.archive`. Archiving a note hides it from the Index and
-List.
-
-#### Unarchive notes
-Open command palette and search for `Note: Unarchive...`. This will open a
-list of archived notes sorted by modification date. Selecting one from the
-list will unarchive that note.
 
 #### Delete note
 Open a note and then open command palette and search for `Note: Delete`.
